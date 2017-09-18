@@ -1,0 +1,211 @@
+<style type="text/css">
+    .w2p-table {
+        width: 100%;
+        margin-top: 10px;
+        margin-left: 25px;
+    }
+
+    .w2p-table img {
+        cursor: pointer;
+    }
+
+    .w2p-table td.radio {
+        width: 30px;
+    }
+
+    {% if payment_paysera_grid_view == 1 %}
+        div.paysera-payments input[type="radio"] {
+            display: none;
+        }
+
+        div.paysera-payments span.paysera-image {
+            float: left;
+            border: 2px  outset  transparent;
+            padding:12px 10px 12px 10px;
+        }
+
+        div.paysera-payments input[type="radio"]:hover
+        + span.paysera-image img {
+            cursor: pointer;
+        }
+
+        div.paysera-payments input[type="radio"]:checked
+        + span.paysera-image {
+            border: 2px  outset  silver;
+        }
+    {% else %}
+        div.paysera-payments label {
+            width: 100%;
+        }
+
+        div.paysera-payments input[type="radio"] {
+            float: left;
+            margin-top: 12px;
+            margin-right: 12px;
+        }
+
+        div.paysera-payments span.paysera-image {
+            float: left;
+        }
+    {% endif %}
+</style>
+
+<div class="content">
+    <form action="{{ action }}" method="post" id="wtp-checkout">
+        <table>
+            <tr>
+                <td colspan=2">
+                    <h2>
+                        {{ text_chosen }}
+                    </h2>
+                </td>
+            </tr>
+
+            {% if paysera_display_payments == 1 %}
+                <tr>
+                    <td>
+                        {% if payment_country %}
+                            {% set countries = evp_countries %}
+
+                            {% set country_iso = payment_country|lower %}
+                            {% if paysera_selected_country is not empty %}
+                                {% if country_iso not in paysera_selected_country %}
+                                    {% set country_iso = 'other' %}
+                                {% endif %}
+                                {% if country_iso not in paysera_selected_country %}
+                                    {% set country_iso = paysera_selected_country.0 %}
+                                {% endif %}
+                            {% else %}
+                                {% if not key_is_in_evp_countries %}
+                                    {% set country_iso = 'other' %}
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <select id="w2p-cs">
+                            {% for country in countries %}
+                                {% if
+                                    (country.getCode in paysera_selected_country)
+                                    or (paysera_selected_country is empty)
+                                %}
+                                    {% if country.getCode == country_iso %}
+                                        <option value="{{ country.getCode }}"
+                                                selected="selected">
+                                            {{ country.getTitle }}
+                                        </option>
+                                    {% else %}
+                                        <option value="{{ country.getCode }}">
+                                            {{ country.getTitle }}
+                                        </option>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+
+        {% if paysera_display_payments == 1 %}
+            <div style="float: left; width: 100%;"
+                 class="paysera-payments">
+                {% for country in countries %}
+                    {% if
+                        (country.getCode in paysera_selected_country)
+                        or (paysera_selected_country is empty)
+                    %}
+                        <table rel="{{ country.getCode }}"
+                               style="display:
+                                    {% if country.getCode == country_iso %} block
+                                    {% else %} none
+                                    {% endif %}"
+                               class="w2p-table">
+                            {% for group in country.getGroups %}
+                                <tr>
+                                    <td colspan="2">
+                                        <b>
+                                            {{ group.getTitle }}
+                                        </b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        {% for paymentMethod in group.getPaymentMethods %}
+                                            <label>
+                                                <input type="radio"
+                                                       class="radio"
+                                                       name="payment"
+                                                       value="{{ paymentMethod.getKey }}" />
+
+                                                {% if paymentMethod.getLogoUrl %}
+                                                    <span class="paysera-image">
+                                                        <img src="{{ paymentMethod.getLogoUrl }}"
+                                                             title="{{ paymentMethod.getTitle }}"
+                                                             alt="{{ paymentMethod.getTitle }}" />
+                                                    </span>
+                                                {% else %}
+                                                    <span class="paysera-text">
+                                                        {{ paymentMethod.getTitle }}
+                                                    </span>
+                                                {% endif %}
+                                            </label>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div style="clear:both;"></div>
+    </form>
+</div>
+
+<div class="buttons">
+    <div class="pull-right">
+        <button id="button-confirm"
+                class="btn btn-primary"
+                style="text-indent: 0px;">
+            {{ button_confirm }}
+        </button>
+    </div>
+
+
+    <script type="text/javascript"><!--
+        $('.confirm-button').on('click', function () {
+            $('#wtp-checkout').submit();
+        });
+        $('#button-confirm').on('click', function () {
+            $('#wtp-checkout').submit();
+        });
+    //--> </script>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#w2p-cs').change(function () {
+            var value = $('#w2p-cs option:selected').val();
+
+            $('input[name="pmethod"]').each(function () {
+                $(this).attr('checked', false);
+            });
+
+            $('.w2p-table').each(function () {
+                var tid = $(this).attr('rel');
+
+                if (tid == value) {
+                    $(this).css({'display': 'block'});
+                } else {
+                    $(this).css({'display': 'none'});
+                }
+            });
+        });
+
+        $('tr').click(function () {
+            $(this).children('td').children('input').attr('checked', true);
+        });
+    });
+</script>
