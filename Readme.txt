@@ -79,3 +79,4 @@ Support
 For any questions, please look for the answers at https://support.paysera.com or contact customer support center by email  support@paysera.com or by phone +44 20 80996963 | +370 700 17217.
 
 For technical documentation visit: https://developers.paysera.com/
+

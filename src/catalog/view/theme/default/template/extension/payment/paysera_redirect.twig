@@ -1,0 +1,18 @@
+{{ header }}
+<form method="post"
+      action="{{ requestUrl }}"
+      id="paysera">
+    {% for key,value in request %}
+        {% if key is not empty and value is not empty %}
+            <input type="hidden"
+                   name="{{ key }}"
+                   value="{{ value }}"/>
+        {% endif %}
+    {% endfor %}
+</form>
+
+<script type="text/javascript">
+    onload = function () {
+        document.getElementById('payment_paysera').submit();
+    }
+</script>

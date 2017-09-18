@@ -1,0 +1,12 @@
+{
+    "name": "plugin-opencart-3.x/webtopay",
+    "type": "project",
+    "description": "WebToPay",
+    "keywords": ["paysera", "ecommerce", "framework", "webtopay"],
+    "homepage": "http://www.paysera.com",
+    "license": "GPL-3.0+",
+
+    "require": {
+        "webtopay/libwebtopay": ">=0.0.1"
+    }
+}
